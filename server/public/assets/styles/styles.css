@@ -37,3 +37,6 @@ h3{
     padding: 30px;
     font-size: 20px;
 }
+.republicans, .democrats {
+    visibility: hidden;
+}

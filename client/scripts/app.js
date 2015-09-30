@@ -1,52 +1,54 @@
-/**
- * Created by m3rkz0r on 9/28/15.
- */
-var app = angular.module("TestApp",[]);
+$(function() {
+    var winnerBracket = [];
+    var winningCanidate = "";
 
-app.controller("MainControllers",['$scope', '$http', function($scope, $http){
-    $scope.republicans = [];
-    $scope.democrats = [];
-    $scope.winner = [];
-    $scope.showNames = true;
-    $scope.showWinner = true;
+        $.ajax({
+            url: "/getRepublicans"
+        }).done(function (response) {
+            //console.log(response);
+            for (var i = 0; i < response.length; i++) {
+                //console.log(response[i]);
+                winnerBracket[i] = response[i].name;
+                //console.log(winnerBracket);
+                var $content = $("<li><p>" + response[i].name + "</p></li>");
+                $(".republicans").append($content);
+            }
 
-    var getRepublicans = function() {
-        $http.get('/getRepublicans').then(function (res) {
-            $scope.republicans = res.data;
-            console.log(res.data);
-        });
-    };
+        })
+            $.ajax({
+                url: '/getDemocrats'
+            }).done(function (response) {
+                //console.log(response);
+                for (var i = 0; i < response.length; i++) {
+                    //console.log(response[i]);
+                    //console.log(winnerBracket);
+                    winnerBracket[i+5] = response[i].name;
+                    var $content = $("<li><p>" + response[i].name + "</p></li>");
+                    $(".democrats").append($content);
+                    //console.log(winnerBracket);
 
-    var getDemocrats = function() {
-        $http.get('/getDemocrats').then(function (res) {
-            $scope.democrats = res.data; //democrats is our variable from our server app.js get value.
-        });
-    };
+                }
+                    president();
+                    //console.log(president());
+            })
 
-    $scope.getWinner = function(){
-        $scope.winnerBracket = $scope.republicans.concat($scope.democrats);
+                var president = function(){
+                    var randNum = Math.floor(Math.random() *(10-1)+1);
+                   // console.log(randNum);
+                     winningCanidate = winnerBracket[randNum];
+                   console.log("this is the winner" + winningCanidate);
+        };
 
-        $scope.winner = $scope.winnerBracket[Math.floor(Math.random() * $scope.winnerBracket.length)];
+            $('.btn-danger').on("click", function (event) {
+                $(".showWinner").html(winningCanidate);
+            });
 
-        console.log($scope.winner);
-    };
 
-    //This sets showNames to false, which triggers ng-show to show its values.
-    $scope.toggle = function(){
-        $scope.showNames = !$scope.showNames;
-    };
-
-    $scope.toggleWinner = function(){
-        $scope.showWinner = !$scope.showWinner;
-    };
-
-    getRepublicans();
-    getDemocrats();
-}]);
-
-$('.btn-danger').click(function(){
-    $('.presidentHeading').remove();
-
-    $('p').prepend("<h3 class='presidentHeading'>Your New President!</h3>");
+            $('.btn-primary').on("click", function (event) {
+                $(".republicans").css("visibility", "visible");
+                $(".democrats").css("visibility", "visible");
+            });
 });
+
+
 
